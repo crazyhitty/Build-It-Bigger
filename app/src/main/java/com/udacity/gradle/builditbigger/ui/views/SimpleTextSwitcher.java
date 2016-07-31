@@ -21,6 +21,18 @@ import com.udacity.gradle.builditbigger.R;
 public class SimpleTextSwitcher extends TextSwitcher {
     private String mText;
     private int mTextAppearance;
+    private ViewFactory mFactory = new ViewFactory() {
+        @Override
+        public View makeView() {
+            TextView textView = new TextView(getContext());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                textView.setTextAppearance(mTextAppearance);
+            } else {
+                textView.setTextAppearance(getContext(), mTextAppearance);
+            }
+            return textView;
+        }
+    };
 
     public SimpleTextSwitcher(Context context) {
         super(context);
@@ -31,17 +43,26 @@ public class SimpleTextSwitcher extends TextSwitcher {
         super(context, attrs);
         initializeAttributes(attrs);
         initializeView();
-
     }
 
     private void initializeAttributes(AttributeSet attributeSet){
         TypedArray typedArray=getContext().getTheme().obtainStyledAttributes(attributeSet, R.styleable.SimpleTextSwitcher, 0, 0);
         try{
-            mText=typedArray.getString(R.styleable.SimpleTextSwitcher_text);
-            mTextAppearance=typedArray.getResourceId(R.styleable.SimpleTextSwitcher_textAppearance, android.R.style.TextAppearance_Medium);
+            mText = typedArray.getString(R.styleable.SimpleTextSwitcher_switcherText);
+            mTextAppearance = typedArray.getResourceId(R.styleable.SimpleTextSwitcher_switcherTextAppearance, android.R.style.TextAppearance_Medium);
         }finally {
             typedArray.recycle();
         }
+    }
+
+    public void setSwitcherText(String text) {
+        mText = text;
+        setText(text);
+    }
+
+    public void setSwitcherTextAppearance(int textAppearance) {
+        this.mTextAppearance = textAppearance;
+        invalidate();
     }
 
     private void initializeView(){
@@ -56,17 +77,4 @@ public class SimpleTextSwitcher extends TextSwitcher {
 
         setCurrentText(mText);
     }
-
-    private ViewFactory mFactory = new ViewFactory() {
-        @Override
-        public View makeView() {
-            TextView textView = new TextView(getContext());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                textView.setTextAppearance(mTextAppearance);
-            }else {
-                textView.setTextAppearance(getContext(), mTextAppearance);
-            }
-            return textView;
-        }
-    };
 }

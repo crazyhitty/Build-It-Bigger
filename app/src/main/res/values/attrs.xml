@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="SimpleTextSwitcher">
-        <attr name="text" format="string"/>
-        <attr name="textAppearance" format="reference"/>
+        <attr name="switcherText" format="string" />
+        <attr name="switcherTextAppearance" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="LoadingView">
+        <attr name="loadingText" format="string" />
+        <attr name="loadingStatus" format="boolean" />
+        <attr name="loadingTextAppearance" format="reference" />
+        <attr name="progressBarStyle" format="reference" />
     </declare-styleable>
 </resources>

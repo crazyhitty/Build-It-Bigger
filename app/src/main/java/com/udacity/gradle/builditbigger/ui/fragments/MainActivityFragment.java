@@ -13,12 +13,10 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.ads.AdRequest;
 import com.udacity.gradle.builditbigger.R;
-import com.udacity.gradle.builditbigger.databinding.FragmentMainBinding;
 import com.udacity.gradle.builditbigger.data.UserPreferences;
+import com.udacity.gradle.builditbigger.databinding.FragmentMainBinding;
 
-/**
- * A placeholder fragment containing a simple view.
- */
+
 public class MainActivityFragment extends Fragment {
     private static final String[] DUMMY_TEXT={"This", "is", "a", "text", "view", "switcher", "example"};
     private int mDummyTextPosition=0;
@@ -60,6 +58,12 @@ public class MainActivityFragment extends Fragment {
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         mFragmentMainBinding.adView.loadAd(adRequest);
+
+        // set initial joke hint
+        mFragmentMainBinding.setJokeText(getString(R.string.your_joke_will_appear_here));
+
+        // set initial loading hint
+        mFragmentMainBinding.setLoadingText(getString(R.string.no_joke_loaded));
     }
 
     public void loadJoke(View view) {
@@ -67,6 +71,8 @@ public class MainActivityFragment extends Fragment {
         if(mDummyTextPosition!=DUMMY_TEXT.length-1) {
             mDummyTextPosition++;
         }
+        mFragmentMainBinding.setLoadingStatus(!mFragmentMainBinding.getLoadingStatus());
+        mFragmentMainBinding.setLoadingText("Dummy text");
     }
 
     @Override

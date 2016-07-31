@@ -8,9 +8,17 @@
         <variable
             name="jokeText"
             type="String"/>
+
+        <variable
+            name="loadingText"
+            type="String" />
+
+        <variable
+            name="loadingStatus"
+            type="boolean" />
     </data>
 
-    <RelativeLayout xmlns:ads="http://schemas.android.com/apk/res-auto"
+    <RelativeLayout
         android:id="@+id/content_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -18,10 +26,10 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="@dimen/card_height"
+            android:layout_alignParentTop="true"
             android:layout_margin="@dimen/margin_avg"
             app:cardCornerRadius="@dimen/card_corner_radius"
-            app:contentPadding="@dimen/padding_small"
-            android:layout_alignParentTop="true">
+            app:contentPadding="@dimen/padding_small">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -32,15 +40,14 @@
                     android:layout_height="match_parent"
                     android:layout_above="@+id/relative_layout_card_view_bottom_bar"
                     android:layout_alignParentTop="true"
-                    android:requiresFadingEdge="vertical"
-                    android:fadingEdgeLength="@dimen/scroll_view_fading_edge_length">
+                    android:fadingEdgeLength="@dimen/scroll_view_fading_edge_length"
+                    android:requiresFadingEdge="vertical">
 
                     <com.udacity.gradle.builditbigger.ui.views.SimpleTextSwitcher
-                        android:id="@+id/text_view_joke"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                        app:text="@{jokeText}"/>
+                        app:switcherText="@{jokeText}"
+                        app:switcherTextAppearance="@style/TextAppearance.AppCompat.Medium" />
 
                 </ScrollView>
 
@@ -49,14 +56,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true">
-
-                    <TextView
-                        android:id="@+id/loading_layout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_toStartOf="@+id/button_load_joke"
-                        android:layout_centerVertical="true"/>
 
                     <Button
                         android:id="@+id/button_load_joke"
@@ -70,6 +69,15 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Button"
                         android:textColor="@color/colorAccent" />
 
+                    <com.udacity.gradle.builditbigger.ui.views.LoadingView
+                        android:id="@+id/loading_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        app:loadingStatus="@{loadingStatus}"
+                        app:loadingText="@{loadingText}" />
+
                 </RelativeLayout>
 
             </RelativeLayout>
@@ -82,8 +90,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="@string/banner_ad_unit_id" />
+            app:adSize="BANNER"
+            app:adUnitId="@string/banner_ad_unit_id" />
 
     </RelativeLayout>
 </layout>

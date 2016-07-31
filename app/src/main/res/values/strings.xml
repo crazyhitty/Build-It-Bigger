@@ -10,4 +10,6 @@
     <string name="action_google_app_engine">Google App Engine</string>
     <string name="action_joke_source">Joke Source</string>
     <string name="load_joke">Load Joke</string>
+    <string name="your_joke_will_appear_here">Your joke will appear here</string>
+    <string name="no_joke_loaded">No joke loaded</string>
 </resources>
