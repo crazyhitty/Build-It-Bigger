@@ -9,4 +9,5 @@
     <string name="action_android_library">Android Library</string>
     <string name="action_google_app_engine">Google App Engine</string>
     <string name="action_joke_source">Joke Source</string>
+    <string name="load_joke">Load Joke</string>
 </resources>

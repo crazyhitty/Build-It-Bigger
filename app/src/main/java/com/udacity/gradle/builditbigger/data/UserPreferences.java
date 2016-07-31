@@ -1,8 +1,8 @@
-package com.udacity.gradle.builditbigger.ui.data;
+package com.udacity.gradle.builditbigger.data;
 
 import android.content.Context;
 
-import com.udacity.gradle.builditbigger.ui.utils.SharedPrefUtil;
+import com.udacity.gradle.builditbigger.utils.SharedPrefUtil;
 
 /**
  * Author: Kartik Sharma

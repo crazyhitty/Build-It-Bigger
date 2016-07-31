@@ -10,17 +10,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.udacity.gradle.builditbigger.R;
 import com.udacity.gradle.builditbigger.databinding.FragmentMainBinding;
-import com.udacity.gradle.builditbigger.ui.data.UserPreferences;
+import com.udacity.gradle.builditbigger.data.UserPreferences;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
+    private static final String[] DUMMY_TEXT={"This", "is", "a", "text", "view", "switcher", "example"};
+    private int mDummyTextPosition=0;
+
     private FragmentMainBinding mFragmentMainBinding;
 
     public static MainActivityFragment newInstance() {
@@ -60,8 +62,11 @@ public class MainActivityFragment extends Fragment {
         mFragmentMainBinding.adView.loadAd(adRequest);
     }
 
-    public void tellJoke(View view) {
-        Toast.makeText(getActivity(), "derp", Toast.LENGTH_SHORT).show();
+    public void loadJoke(View view) {
+        mFragmentMainBinding.setJokeText(DUMMY_TEXT[mDummyTextPosition]);
+        if(mDummyTextPosition!=DUMMY_TEXT.length-1) {
+            mDummyTextPosition++;
+        }
     }
 
     @Override

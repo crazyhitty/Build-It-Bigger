@@ -1,4 +1,4 @@
-package com.udacity.gradle.builditbigger.ui.utils;
+package com.udacity.gradle.builditbigger.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
