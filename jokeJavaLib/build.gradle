@@ -1,0 +1,11 @@
+apply plugin: 'java'
+
+task execute(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'com.crazyhitty.joke.JokeFromJavaLibrary'
+}
+
+compileJava {
+    sourceCompatibility JavaVersion.VERSION_1_7.toString()
+    targetCompatibility JavaVersion.VERSION_1_7.toString()
+}

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.ads.AdRequest;
 import com.udacity.gradle.builditbigger.R;
+import com.udacity.gradle.builditbigger.data.JokeFetcher;
 import com.udacity.gradle.builditbigger.data.UserPreferences;
 import com.udacity.gradle.builditbigger.databinding.FragmentMainBinding;
 
@@ -72,7 +73,9 @@ public class MainActivityFragment extends Fragment {
             mDummyTextPosition++;
         }
         mFragmentMainBinding.setLoadingStatus(!mFragmentMainBinding.getLoadingStatus());
-        mFragmentMainBinding.setLoadingText("Dummy text");
+
+        String joke = JokeFetcher.fetchJoke(UserPreferences.getJokeFetchType(getActivity()));
+        mFragmentMainBinding.setJokeText(joke);
     }
 
     @Override
