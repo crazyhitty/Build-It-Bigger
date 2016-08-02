@@ -2,7 +2,7 @@ apply plugin: 'java'
 
 task execute(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'com.crazyhitty.joke.JokeFromJavaLibrary'
+    main = 'com.crazyhitty.java.joke.JokeFromJavaLibrary'
 }
 
 compileJava {

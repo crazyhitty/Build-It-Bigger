@@ -12,4 +12,5 @@
     <string name="load_joke">Load Joke</string>
     <string name="your_joke_will_appear_here">Your joke will appear here</string>
     <string name="no_joke_loaded">No joke loaded</string>
+    <string name="joke_loaded">Joke Loaded</string>
 </resources>

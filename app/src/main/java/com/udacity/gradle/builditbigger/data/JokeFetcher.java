@@ -1,6 +1,8 @@
 package com.udacity.gradle.builditbigger.data;
 
-import com.crazyhitty.joke.JokeFromJavaLibrary;
+
+import com.crazyhitty.android.joke.JokeFromAndroidLibrary;
+import com.crazyhitty.java.joke.JokeFromJavaLibrary;
 
 /**
  * Author: Kartik Sharma
@@ -27,7 +29,7 @@ public class JokeFetcher {
     }
 
     private static String fetchJokeFromAndroidLibrary() {
-        return null;
+        return JokeFromAndroidLibrary.getJoke();
     }
 
     private static String fetchJokeFromGoogleAppEngine() {

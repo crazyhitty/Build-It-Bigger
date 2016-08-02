@@ -19,9 +19,6 @@ import com.udacity.gradle.builditbigger.databinding.FragmentMainBinding;
 
 
 public class MainActivityFragment extends Fragment {
-    private static final String[] DUMMY_TEXT={"This", "is", "a", "text", "view", "switcher", "example"};
-    private int mDummyTextPosition=0;
-
     private FragmentMainBinding mFragmentMainBinding;
 
     public static MainActivityFragment newInstance() {
@@ -68,11 +65,8 @@ public class MainActivityFragment extends Fragment {
     }
 
     public void loadJoke(View view) {
-        mFragmentMainBinding.setJokeText(DUMMY_TEXT[mDummyTextPosition]);
-        if(mDummyTextPosition!=DUMMY_TEXT.length-1) {
-            mDummyTextPosition++;
-        }
-        mFragmentMainBinding.setLoadingStatus(!mFragmentMainBinding.getLoadingStatus());
+        mFragmentMainBinding.setLoadingText(getString(R.string.joke_loaded));
+        mFragmentMainBinding.setLoadingStatus(false);
 
         String joke = JokeFetcher.fetchJoke(UserPreferences.getJokeFetchType(getActivity()));
         mFragmentMainBinding.setJokeText(joke);
