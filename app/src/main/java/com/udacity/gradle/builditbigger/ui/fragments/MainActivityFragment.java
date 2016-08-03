@@ -1,5 +1,6 @@
 package com.udacity.gradle.builditbigger.ui.fragments;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,8 +19,9 @@ import com.udacity.gradle.builditbigger.data.UserPreferences;
 import com.udacity.gradle.builditbigger.databinding.FragmentMainBinding;
 
 
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFetcherListener {
     private FragmentMainBinding mFragmentMainBinding;
+    private JokeFetcher mJokeFetcher;
 
     public static MainActivityFragment newInstance() {
         Bundle args = new Bundle();
@@ -62,14 +64,16 @@ public class MainActivityFragment extends Fragment {
 
         // set initial loading hint
         mFragmentMainBinding.setLoadingText(getString(R.string.no_joke_loaded));
+
+        // initialize the JokeFetcher instance
+        mJokeFetcher = new JokeFetcher(this);
     }
 
     public void loadJoke(View view) {
-        mFragmentMainBinding.setLoadingText(getString(R.string.joke_loaded));
-        mFragmentMainBinding.setLoadingStatus(false);
+        mFragmentMainBinding.setLoadingStatus(true);
+        mFragmentMainBinding.setLoadingText(getString(R.string.loading_joke));
 
-        String joke = JokeFetcher.fetchJoke(UserPreferences.getJokeFetchType(getActivity()));
-        mFragmentMainBinding.setJokeText(joke);
+        mJokeFetcher.fetchJoke(this);
     }
 
     @Override
@@ -85,10 +89,12 @@ public class MainActivityFragment extends Fragment {
         MenuItem menuItemAndroidLibrary = menu.findItem(R.id.action_android_library);
         MenuItem menuItemGoogleAppEngine = menu.findItem(R.id.action_google_app_engine);
 
+        // uncheck all the menu items
         menuItemJavaLibrary.setChecked(false);
         menuItemAndroidLibrary.setChecked(false);
         menuItemGoogleAppEngine.setChecked(false);
 
+        // check the menu item based upon pre defined selection
         switch (UserPreferences.getJokeFetchType(getActivity())) {
             case UserPreferences.ARG_FETCH_JOKE_FROM_JAVA_LIBRARY:
                 menuItemJavaLibrary.setChecked(true);
@@ -105,6 +111,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
+        // check the menu item based upon user selection
         item.setChecked(true);
         switch (itemId) {
             case R.id.action_java_library:
@@ -118,5 +125,27 @@ public class MainActivityFragment extends Fragment {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onJokeRetrievedSuccessfully(String joke) {
+        mFragmentMainBinding.setLoadingStatus(false);
+        mFragmentMainBinding.setLoadingText(getString(R.string.joke_loaded));
+
+        mFragmentMainBinding.setJokeText(joke);
+    }
+
+    @Override
+    public void onJokeRetrievalFailure(String errorMsg) {
+        mFragmentMainBinding.setLoadingText(getString(R.string.error_loading_joke));
+        mFragmentMainBinding.setLoadingStatus(false);
+
+        mFragmentMainBinding.setJokeText(errorMsg);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mJokeFetcher.onActivityResult(requestCode, resultCode, data);
     }
 }

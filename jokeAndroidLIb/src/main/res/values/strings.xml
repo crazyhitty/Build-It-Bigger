@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Build it Bigger</string>
+    <string name="joke_activity">Joke Activity</string>
+    <string name="action_close">Close</string>
 </resources>

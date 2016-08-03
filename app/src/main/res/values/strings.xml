@@ -13,4 +13,6 @@
     <string name="your_joke_will_appear_here">Your joke will appear here</string>
     <string name="no_joke_loaded">No joke loaded</string>
     <string name="joke_loaded">Joke Loaded</string>
+    <string name="error_loading_joke">Error loading joke ;(</string>
+    <string name="loading_joke">Loading joke, please wait...</string>
 </resources>
