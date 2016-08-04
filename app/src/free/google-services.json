@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:781169918810:android:9f736eb9fc1e1319",
         "android_client_info": {
-          "package_name": "com.udacity.gradle.builditbigger"
+          "package_name": "com.udacity.gradle.builditbigger.free"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "781169918810-r8dn3eeafkc0dqlsdme09ticocd143e7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.udacity.gradle.builditbigger",
+            "package_name": "com.udacity.gradle.builditbigger.free",
             "certificate_hash": "49B2CFFF3AF4D29090207B2391ACE6822CA49269"
           }
         },

@@ -15,8 +15,4 @@
     <string name="joke_loaded">Joke Loaded</string>
     <string name="error_loading_joke">Error loading joke ;(</string>
     <string name="loading_joke">Loading joke, please wait...</string>
-    <string name="action_about">About</string>
-    <string name="about">About</string>
-    <string name="app_variant">App Variant</string>
-    <string name="dismiss">Dismiss</string>
 </resources>

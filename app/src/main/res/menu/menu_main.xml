@@ -28,4 +28,9 @@
             </group>
         </menu>
     </item>
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="100"
+        android:title="@string/action_about"
+        app:showAsAction="never" />
 </menu>
