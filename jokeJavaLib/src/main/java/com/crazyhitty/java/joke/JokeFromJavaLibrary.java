@@ -18,7 +18,7 @@ public class JokeFromJavaLibrary {
                     "My name is Paul.",
             "My dog used to chase people on a bike a lot. It got so bad, finally I had to take his bike away.",
             "What is the difference between a snowman and a snowwoman?\n" +
-                    "-\n" +
+                    "\n" +
                     "Snowballs.",
             "Mother, \"How was school today, Patrick?\"\n" +
                     "\n" +

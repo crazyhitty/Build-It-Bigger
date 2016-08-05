@@ -5,9 +5,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import com.crazyhitty.android.joke.ViewJokeActivity;
+import com.crazyhitty.gae.joke.jokeApi.JokeApi;
 import com.crazyhitty.java.joke.JokeFromJavaLibrary;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+
+import java.io.IOException;
+
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Author: Kartik Sharma
@@ -16,13 +30,21 @@ import com.crazyhitty.java.joke.JokeFromJavaLibrary;
  */
 
 public class JokeFetcher {
+    private static final String TAG = JokeFetcher.class.getSimpleName();
+
     private static final String ERR_MSG_NO_TYPE_DEFINED = "No type defined !";
     private static final String ERR_MSG_NOT_IMPLEMENTED = "Not yet implemented !";
     private static final String ERR_MSG_UNABLE_TO_GET_JOKE_ANDROID_LIB = "Unable to fetch joke from android library!";
 
     private static final int RC_FETCH_JOKE_ANDROID_LIB = 1337;
 
-    public JokeFetcherListener mJokeFetcherListener;
+    private static final String LOCAL_HOST_IP_ADDRESS = "192.168.1.2";
+    private static final String PORT = "8080";
+    private static final String ROOT_URL = "http://" + LOCAL_HOST_IP_ADDRESS + ":" + PORT + "/_ah/api/";
+
+    private JokeFetcherListener mJokeFetcherListener;
+
+    private JokeApi mJokeApi;
 
     /**
      * Constructor of {@link JokeFetcher} class with a listener which can further provide joke.
@@ -68,7 +90,7 @@ public class JokeFetcher {
     /**
      * Start the {@link ViewJokeActivity} and loads a joke from {@link JokeFromJavaLibrary} class.
      *
-     * @param fragment    Instance of the fragment in which this class is being used
+     * @param fragment Instance of the fragment in which this class is being used
      */
     private void fetchJokeFromAndroidLibrary(Fragment fragment) {
         Intent intentStartJokeLibActivity = new Intent(fragment.getActivity(), ViewJokeActivity.class);
@@ -79,7 +101,52 @@ public class JokeFetcher {
      * Fetches the joke from the google app engine.
      */
     private void fetchJokeFromGoogleAppEngine() {
-        mJokeFetcherListener.onJokeRetrievalFailure(ERR_MSG_NOT_IMPLEMENTED);
+        Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                try {
+                    String joke = getJokeFromApi();
+                    subscriber.onNext(joke);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "onError: " + e.getMessage(), e);
+                        mJokeFetcherListener.onJokeRetrievalFailure(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        mJokeFetcherListener.onJokeRetrievedSuccessfully(s);
+                    }
+                });
+    }
+
+    private String getJokeFromApi() throws IOException {
+        if (mJokeApi == null) {
+            JokeApi.Builder builder = new JokeApi.Builder(AndroidHttp.newCompatibleTransport(),
+                    new AndroidJsonFactory(), null)
+                    .setRootUrl(ROOT_URL)
+                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                        @Override
+                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                            abstractGoogleClientRequest.setDisableGZipContent(true);
+                        }
+                    });
+            mJokeApi = builder.build();
+        }
+        return mJokeApi.tellJoke().execute().getJoke();
     }
 
     /**
