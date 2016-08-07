@@ -14,19 +14,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.udacity.gradle.builditbigger.BuildConfig;
 import com.udacity.gradle.builditbigger.R;
 import com.udacity.gradle.builditbigger.data.JokeFetcher;
 import com.udacity.gradle.builditbigger.data.UserPreferences;
 import com.udacity.gradle.builditbigger.databinding.FragmentMainBinding;
+import com.udacity.gradle.builditbigger.utils.NetworkConnectionUtil;
 
 import java.util.Locale;
 
 
 public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFetcherListener {
+    private static final String ARG_JOKE_TEXT = "JOKE_TEXT";
+
     private FragmentMainBinding mFragmentMainBinding;
     private JokeFetcher mJokeFetcher;
+
+    private InterstitialAd mInterstitialAd;
 
     public static MainActivityFragment newInstance() {
         Bundle args = new Bundle();
@@ -52,10 +59,10 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        init();
+        init(savedInstanceState);
     }
 
-    private void init() {
+    private void init(Bundle savedInstanceState) {
         // Create an ad request. Check logcat output for the hashed device ID to
         // get test ads on a physical device. e.g.
         // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
@@ -64,14 +71,42 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
                 .build();
         mFragmentMainBinding.adView.loadAd(adRequest);
 
-        // set initial joke hint
-        mFragmentMainBinding.setJokeText(getString(R.string.your_joke_will_appear_here));
+        // initialize a interstitial ad
+        mInterstitialAd = new InterstitialAd(getActivity());
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                requestNewInterstitial();
+            }
+        });
+        requestNewInterstitial();
 
-        // set initial loading hint
-        mFragmentMainBinding.setLoadingText(getString(R.string.no_joke_loaded));
+        // Check if the joke is already available in the savedInstanceState bundle, if available
+        // set it on the textViews. Otherwise set dummy data on textViews.
+        if (savedInstanceState != null) {
+            String currJoke = savedInstanceState.getString(ARG_JOKE_TEXT);
+            mFragmentMainBinding.setJokeText(currJoke);
+            mFragmentMainBinding.setLoadingText(getString(R.string.joke_loaded));
+        } else {
+            // set initial joke hint
+            mFragmentMainBinding.setJokeText(getString(R.string.your_joke_will_appear_here));
+
+            // set initial loading hint
+            mFragmentMainBinding.setLoadingText(getString(R.string.no_joke_loaded));
+        }
 
         // initialize the JokeFetcher instance
         mJokeFetcher = new JokeFetcher(this);
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
     }
 
     public void loadJoke(View view) {
@@ -151,7 +186,14 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
     }
 
     @Override
-    public void onJokeRetrievedSuccessfully(String joke) {
+    public void onJokeRetrievedSuccessfully(String joke, int source) {
+        // show the interstitial ad when joke loads completely, only if
+        // the joke is retrieved from google app engine
+        if (source == UserPreferences.ARG_FETCH_JOKE_FROM_GOOGLE_APP_ENGINE &&
+                mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
+
         mFragmentMainBinding.setLoadingStatus(false);
         mFragmentMainBinding.setLoadingText(getString(R.string.joke_loaded));
 
@@ -167,8 +209,25 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
     }
 
     @Override
+    public void onNoInternetAvailable(String errorMsg) {
+        mFragmentMainBinding.setLoadingText(getString(R.string.error_loading_joke));
+        mFragmentMainBinding.setLoadingStatus(false);
+
+        mFragmentMainBinding.setJokeText(errorMsg);
+
+        NetworkConnectionUtil.showNoInternetAvailableErrorDialog(getActivity());
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mJokeFetcher.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String currJoke = mFragmentMainBinding.getJokeText();
+        outState.putString(ARG_JOKE_TEXT, currJoke);
     }
 }

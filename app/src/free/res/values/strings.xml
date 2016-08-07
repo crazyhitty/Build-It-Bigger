@@ -3,8 +3,6 @@
     <string name="instructions">Press the button for a delicious joke!</string>
     <string name="button_text">Tell Joke</string>
     <string name="action_settings">Settings</string>
-    <!--This is not a live id, just a test id for testing purposes.-->
-    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="action_java_library">Java Library</string>
     <string name="action_android_library">Android Library</string>
     <string name="action_google_app_engine">Google App Engine</string>
@@ -15,4 +13,8 @@
     <string name="joke_loaded">Joke Loaded</string>
     <string name="error_loading_joke">Error loading joke ;(</string>
     <string name="loading_joke">Loading joke, please wait...</string>
+
+    <!--These are not live ids, just test ids for testing purposes.-->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
 </resources>

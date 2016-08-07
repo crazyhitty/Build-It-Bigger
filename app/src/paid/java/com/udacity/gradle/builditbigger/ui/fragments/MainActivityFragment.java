@@ -19,11 +19,14 @@ import com.udacity.gradle.builditbigger.R;
 import com.udacity.gradle.builditbigger.data.JokeFetcher;
 import com.udacity.gradle.builditbigger.data.UserPreferences;
 import com.udacity.gradle.builditbigger.databinding.FragmentMainBinding;
+import com.udacity.gradle.builditbigger.utils.NetworkConnectionUtil;
 
 import java.util.Locale;
 
 
 public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFetcherListener {
+    private static final String ARG_JOKE_TEXT="JOKE_TEXT";
+
     private FragmentMainBinding mFragmentMainBinding;
     private JokeFetcher mJokeFetcher;
 
@@ -51,15 +54,23 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        init();
+        init(savedInstanceState);
     }
 
-    private void init() {
-        // set initial joke hint
-        mFragmentMainBinding.setJokeText(getString(R.string.your_joke_will_appear_here));
+    private void init(Bundle savedInstanceState) {
+        // Check if the joke is already available in the savedInstanceState bundle, if available
+        // set it on the textViews. Otherwise set dummy data on textViews.
+        if(savedInstanceState!=null){
+            String currJoke=savedInstanceState.getString(ARG_JOKE_TEXT);
+            mFragmentMainBinding.setJokeText(currJoke);
+            mFragmentMainBinding.setLoadingText(getString(R.string.joke_loaded));
+        }else {
+            // set initial joke hint
+            mFragmentMainBinding.setJokeText(getString(R.string.your_joke_will_appear_here));
 
-        // set initial loading hint
-        mFragmentMainBinding.setLoadingText(getString(R.string.no_joke_loaded));
+            // set initial loading hint
+            mFragmentMainBinding.setLoadingText(getString(R.string.no_joke_loaded));
+        }
 
         // initialize the JokeFetcher instance
         mJokeFetcher = new JokeFetcher(this);
@@ -142,7 +153,7 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
     }
 
     @Override
-    public void onJokeRetrievedSuccessfully(String joke) {
+    public void onJokeRetrievedSuccessfully(String joke, int source) {
         mFragmentMainBinding.setLoadingStatus(false);
         mFragmentMainBinding.setLoadingText(getString(R.string.joke_loaded));
 
@@ -158,8 +169,25 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
     }
 
     @Override
+    public void onNoInternetAvailable(String errorMsg) {
+        mFragmentMainBinding.setLoadingText(getString(R.string.error_loading_joke));
+        mFragmentMainBinding.setLoadingStatus(false);
+
+        mFragmentMainBinding.setJokeText(errorMsg);
+
+        NetworkConnectionUtil.showNoInternetAvailableErrorDialog(getActivity());
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mJokeFetcher.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String currJoke=mFragmentMainBinding.getJokeText();
+        outState.putString(ARG_JOKE_TEXT, currJoke);
     }
 }

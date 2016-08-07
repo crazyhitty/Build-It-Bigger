@@ -2,6 +2,7 @@ package com.udacity.gradle.builditbigger.data;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.udacity.gradle.builditbigger.utils.NetworkConnectionUtil;
 
 import java.io.IOException;
 
@@ -33,14 +35,9 @@ public class JokeFetcher {
     private static final String TAG = JokeFetcher.class.getSimpleName();
 
     private static final String ERR_MSG_NO_TYPE_DEFINED = "No type defined !";
-    private static final String ERR_MSG_NOT_IMPLEMENTED = "Not yet implemented !";
     private static final String ERR_MSG_UNABLE_TO_GET_JOKE_ANDROID_LIB = "Unable to fetch joke from android library!";
 
     private static final int RC_FETCH_JOKE_ANDROID_LIB = 1337;
-
-    private static final String LOCAL_HOST_IP_ADDRESS = "192.168.1.2";
-    private static final String PORT = "8080";
-    private static final String ROOT_URL = "http://" + LOCAL_HOST_IP_ADDRESS + ":" + PORT + "/_ah/api/";
 
     private JokeFetcherListener mJokeFetcherListener;
 
@@ -72,7 +69,7 @@ public class JokeFetcher {
                 fetchJokeFromAndroidLibrary(fragment);
                 break;
             case UserPreferences.ARG_FETCH_JOKE_FROM_GOOGLE_APP_ENGINE:
-                fetchJokeFromGoogleAppEngine();
+                fetchJokeFromGoogleAppEngine(fragment.getActivity().getApplicationContext());
                 break;
             default:
                 mJokeFetcherListener.onJokeRetrievalFailure(ERR_MSG_NO_TYPE_DEFINED);
@@ -84,7 +81,7 @@ public class JokeFetcher {
      */
     private void fetchJokeFromJavaLibrary() {
         String joke = JokeFromJavaLibrary.getJoke();
-        mJokeFetcherListener.onJokeRetrievedSuccessfully(joke);
+        mJokeFetcherListener.onJokeRetrievedSuccessfully(joke, UserPreferences.ARG_FETCH_JOKE_FROM_JAVA_LIBRARY);
     }
 
     /**
@@ -99,15 +96,20 @@ public class JokeFetcher {
 
     /**
      * Fetches the joke from the google app engine.
+     * @param context    current context of the application
      */
-    private void fetchJokeFromGoogleAppEngine() {
+    private void fetchJokeFromGoogleAppEngine(final Context context) {
         Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 try {
-                    String joke = getJokeFromApi();
-                    subscriber.onNext(joke);
-                    subscriber.onCompleted();
+                    if (NetworkConnectionUtil.isConnectedToInternet(context)) {
+                        String joke = getJokeFromApi();
+                        subscriber.onNext(joke);
+                        subscriber.onCompleted();
+                    } else {
+                        subscriber.onError(new JokeUnavailableException(NetworkConnectionUtil.ERR_DIALOG_TITLE));
+                    }
                 } catch (Exception e) {
                     subscriber.onError(e);
                 }
@@ -123,21 +125,32 @@ public class JokeFetcher {
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "onError: " + e.getMessage(), e);
-                        mJokeFetcherListener.onJokeRetrievalFailure(e.getMessage());
+                        if (e instanceof JokeUnavailableException) {
+                            mJokeFetcherListener.onNoInternetAvailable(e.getMessage());
+                        } else {
+                            mJokeFetcherListener.onJokeRetrievalFailure(e.getMessage());
+                        }
                     }
 
                     @Override
                     public void onNext(String s) {
-                        mJokeFetcherListener.onJokeRetrievedSuccessfully(s);
+                        mJokeFetcherListener.onJokeRetrievedSuccessfully(s, UserPreferences.ARG_FETCH_JOKE_FROM_GOOGLE_APP_ENGINE);
                     }
                 });
     }
 
+    /**
+     * Retrieve joke from google app engine api.
+     * This method <b>must run on background thread</b>, running it on main thread will freeze the UI.
+     *
+     * @return joke in string format
+     * @throws IOException
+     */
     private String getJokeFromApi() throws IOException {
         if (mJokeApi == null) {
             JokeApi.Builder builder = new JokeApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
-                    .setRootUrl(ROOT_URL)
+                    .setRootUrl(ApiSettings.ROOT_URL)
                     .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                         @Override
                         public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
@@ -161,7 +174,7 @@ public class JokeFetcher {
             Bundle bundle = data.getExtras();
             if (bundle != null) {
                 String joke = data.getExtras().getString(ViewJokeActivity.ARG_JOKE);
-                mJokeFetcherListener.onJokeRetrievedSuccessfully(joke);
+                mJokeFetcherListener.onJokeRetrievedSuccessfully(joke, UserPreferences.ARG_FETCH_JOKE_FROM_ANDROID_LIBRARY);
             } else {
                 mJokeFetcherListener.onJokeRetrievalFailure(ERR_MSG_UNABLE_TO_GET_JOKE_ANDROID_LIB);
             }
@@ -175,15 +188,29 @@ public class JokeFetcher {
         /**
          * When joke is retrieved successfully.
          *
-         * @param joke joke retrieved
+         * @param joke      joke retrieved
+         * @param source    source from which the joke is retrieved
          */
-        void onJokeRetrievedSuccessfully(String joke);
+        void onJokeRetrievedSuccessfully(String joke, int source);
 
         /**
          * When joke cannot be loaded due to some error.
          *
-         * @param errorMsg error message
+         * @param errorMsg    error message
          */
         void onJokeRetrievalFailure(String errorMsg);
+
+        /**
+         * When joke cannot be loaded because no internet connection is available
+         *
+         * @param errorMsg error message
+         */
+        void onNoInternetAvailable(String errorMsg);
+    }
+
+    private static class JokeUnavailableException extends RuntimeException {
+        JokeUnavailableException(String message) {
+            super(message);
+        }
     }
 }
