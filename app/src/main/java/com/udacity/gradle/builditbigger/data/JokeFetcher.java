@@ -11,13 +11,7 @@ import android.util.Log;
 import com.crazyhitty.android.joke.ViewJokeActivity;
 import com.crazyhitty.gae.joke.jokeApi.JokeApi;
 import com.crazyhitty.java.joke.JokeFromJavaLibrary;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.udacity.gradle.builditbigger.utils.NetworkConnectionUtil;
-
-import java.io.IOException;
 
 import rx.Observable;
 import rx.Observer;
@@ -104,7 +98,7 @@ public class JokeFetcher {
             public void call(Subscriber<? super String> subscriber) {
                 try {
                     if (NetworkConnectionUtil.isConnectedToInternet(context)) {
-                        String joke = getJokeFromApi();
+                        String joke = GoogleAppEngineConnector.getJokeFromApi();
                         subscriber.onNext(joke);
                         subscriber.onCompleted();
                     } else {
@@ -137,29 +131,6 @@ public class JokeFetcher {
                         mJokeFetcherListener.onJokeRetrievedSuccessfully(s, UserPreferences.ARG_FETCH_JOKE_FROM_GOOGLE_APP_ENGINE);
                     }
                 });
-    }
-
-    /**
-     * Retrieve joke from google app engine api.
-     * This method <b>must run on background thread</b>, running it on main thread will freeze the UI.
-     *
-     * @return joke in string format
-     * @throws IOException
-     */
-    private String getJokeFromApi() throws IOException {
-        if (mJokeApi == null) {
-            JokeApi.Builder builder = new JokeApi.Builder(AndroidHttp.newCompatibleTransport(),
-                    new AndroidJsonFactory(), null)
-                    .setRootUrl(ApiSettings.ROOT_URL)
-                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                        @Override
-                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                            abstractGoogleClientRequest.setDisableGZipContent(true);
-                        }
-                    });
-            mJokeApi = builder.build();
-        }
-        return mJokeApi.tellJoke().execute().getJoke();
     }
 
     /**

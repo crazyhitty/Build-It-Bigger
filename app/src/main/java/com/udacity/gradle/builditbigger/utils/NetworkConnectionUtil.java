@@ -12,8 +12,8 @@ import com.udacity.gradle.builditbigger.R;
 
 /**
  * Utility class for network related queries.
- * <p>
- * Author: Kartik Sharma
+ * <br>
+ * Author Kartik Sharma
  * Created on: 8/7/2016 , 9:15 AM
  * Project: FinalProject
  */

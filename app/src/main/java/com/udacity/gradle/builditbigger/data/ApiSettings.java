@@ -1,6 +1,8 @@
 package com.udacity.gradle.builditbigger.data;
 
 /**
+ * Contains Api info.
+ * <br>
  * Author: Kartik Sharma
  * Created on: 8/7/2016 , 9:10 PM
  * Project: FinalProject
