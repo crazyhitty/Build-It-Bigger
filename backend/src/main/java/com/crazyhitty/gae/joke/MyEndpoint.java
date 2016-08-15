@@ -25,6 +25,9 @@ import java.util.Random;
         )
 )
 public class MyEndpoint {
+    /**
+     * String array containing some jokes.
+     */
     private static final String[] JOKES = {
             "Doctor says to his patient: \n" +
                     "\"You have Cancer and Alzheimer.\"\n" +
@@ -50,7 +53,7 @@ public class MyEndpoint {
     };
 
     /**
-     * A simple endpoint method that takes a name and says Hi back
+     * A simple endpoint method that returns a joke
      */
     @ApiMethod(name = "tellJoke", httpMethod = ApiMethod.HttpMethod.GET)
     public MyBean tellJoke() {

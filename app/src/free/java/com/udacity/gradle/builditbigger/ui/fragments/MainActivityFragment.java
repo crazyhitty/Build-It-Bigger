@@ -35,6 +35,11 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
 
     private InterstitialAd mInterstitialAd;
 
+    /**
+     * Returns a new instance of {@link MainActivityFragment}.
+     *
+     * @return New instance of {@link MainActivityFragment}.
+     */
     public static MainActivityFragment newInstance() {
         Bundle args = new Bundle();
         MainActivityFragment fragment = new MainActivityFragment();
@@ -101,6 +106,9 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
         mJokeFetcher = new JokeFetcher(this);
     }
 
+    /**
+     * Request a new interstitial ad
+     */
     private void requestNewInterstitial() {
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
@@ -109,6 +117,12 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
         mInterstitialAd.loadAd(adRequest);
     }
 
+    /**
+     * Load a new joke. This method is generally called when user clicks on load joke button
+     * from ui.
+     *
+     * @param view View of load joke button.
+     */
     public void loadJoke(View view) {
         mFragmentMainBinding.setLoadingStatus(true);
         mFragmentMainBinding.setLoadingText(getString(R.string.loading_joke));
@@ -170,6 +184,9 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Show about dialog displaying current {@link BuildConfig#APP_VARIANT}
+     */
     private void showAboutDialog() {
         String aboutMsg = String.format(Locale.getDefault(), "%s : %s", getString(R.string.app_variant), BuildConfig.APP_VARIANT);
 
@@ -228,6 +245,8 @@ public class MainActivityFragment extends Fragment implements JokeFetcher.JokeFe
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         String currJoke = mFragmentMainBinding.getJokeText();
+        // Save the current joke into outState bundle, so that it can be later retrieved in the case
+        // of orientation changes.
         outState.putString(ARG_JOKE_TEXT, currJoke);
     }
 }

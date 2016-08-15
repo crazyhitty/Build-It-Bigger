@@ -88,6 +88,12 @@ public class LoadingView extends LinearLayout {
         this.mTextAppearance = textAppearance;
     }
 
+    /**
+     * Sets the local properties based on the {@link AttributeSet} provided via xml or constructors.
+     *
+     * @param attributeSet Attributes containing properties like loadingStatus,
+     *                     progressBarStyle, loadingText or loadingTextAppearance
+     */
     private void initializeAttributes(AttributeSet attributeSet) {
         TypedArray typedArray = getContext().getTheme().obtainStyledAttributes(attributeSet, R.styleable.LoadingView, 0, 0);
         try {
@@ -100,6 +106,11 @@ public class LoadingView extends LinearLayout {
         }
     }
 
+    /**
+     * Initialize the default view.
+     * This includes adding a {@link ProgressBar} and {@link SimpleTextSwitcher} into the parent
+     * view {@link LinearLayout} with horizontal orientation.
+     */
     private void initializeView() {
         // initialize progress bar
         mProgressBar = new ProgressBar(getContext(), null, mProgressBarStyle);

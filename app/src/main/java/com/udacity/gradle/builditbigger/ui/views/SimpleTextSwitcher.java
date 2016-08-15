@@ -19,9 +19,18 @@ import com.udacity.gradle.builditbigger.R;
  */
 
 public class SimpleTextSwitcher extends TextSwitcher {
+
+    // programmatically generated views
     private String mText;
     private int mTextAppearance;
+
+
+    /**
+     * {@link android.widget.ViewSwitcher.ViewFactory} Containing a {@link TextView} which will be
+     * further used by {@link TextSwitcher}.
+     */
     private ViewFactory mFactory = new ViewFactory() {
+        @SuppressWarnings("deprecation")
         @Override
         public View makeView() {
             TextView textView = new TextView(getContext());
@@ -45,6 +54,11 @@ public class SimpleTextSwitcher extends TextSwitcher {
         initializeView();
     }
 
+    /**
+     * Sets the local properties based on the {@link AttributeSet} provided via xml or constructors.
+     *
+     * @param attributeSet Attributes containing properties like text or textAppearance
+     */
     private void initializeAttributes(AttributeSet attributeSet){
         TypedArray typedArray=getContext().getTheme().obtainStyledAttributes(attributeSet, R.styleable.SimpleTextSwitcher, 0, 0);
         try{
@@ -65,6 +79,11 @@ public class SimpleTextSwitcher extends TextSwitcher {
         invalidate();
     }
 
+    /**
+     * Initialize the default view.
+     * This includes setting a {@link android.widget.ViewSwitcher.ViewFactory} containing a
+     * {@link TextView}. Also adding a fade in and fade out animation whenever the text is switched.
+     */
     private void initializeView(){
         setFactory(mFactory);
 

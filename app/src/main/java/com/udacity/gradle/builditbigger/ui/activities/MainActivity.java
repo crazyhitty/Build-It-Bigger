@@ -18,13 +18,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(activityMainBinding.toolbar);
         activityMainBinding.setToolbarTitle(getString(R.string.app_name));
 
-        // Only set fragment when saved instance is null
+        // Only set fragment when saved instance is null.
+        // This is done inorder to stop reloading fragment on orientation changes.
         if (savedInstanceState == null) {
-            init();
+            initFragment();
         }
     }
 
-    private void init() {
+    private void initFragment() {
         // Set main fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

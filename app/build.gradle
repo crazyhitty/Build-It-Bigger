@@ -54,5 +54,29 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.6'
 }
 
+// source: http://stackoverflow.com/a/31441508
+task startGoogleAppEngineTesting(dependsOn: ":backend:appengineRun") {
+    project(":backend").afterEvaluate { backend ->
+        backend.extensions.appengine.daemon = true
+    }
+    doLast {
+        println "Started google app engine server!"
+    }
+}
+
+task runInstrumentationTests(dependsOn: ":app:connectedAndroidTest") {
+    doLast {
+        println "Executed instrumentation tests!"
+    }
+}
+
+task stopAppEngine(dependsOn: ":backend:appengineStop") {
+    doLast {
+        println "Stopped google app engine server!"
+    }
+}
+
+startGoogleAppEngineTesting.finalizedBy runInstrumentationTests
+runInstrumentationTests.finalizedBy stopAppEngine
 
 apply plugin: 'com.google.gms.google-services'

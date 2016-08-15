@@ -4,6 +4,9 @@ import java.util.Locale;
 import java.util.Random;
 
 public class JokeFromJavaLibrary {
+    /**
+     * String array containing some jokes.
+     */
     private static final String[] JOKES = {"Can a kangaroo jump higher than a house? Of course, a house doesn't jump at all.",
             "Doctor: \"I'm sorry but you suffer from a terminal illness and have only 10 to live.\"\n" +
                     "\n" +
@@ -34,13 +37,18 @@ public class JokeFromJavaLibrary {
     /**
      * Get a random joke
      *
-     * @return a random joke
+     * @return random joke in string format
      */
     public static String getJoke() {
         int random = new Random(System.currentTimeMillis()).nextInt(10);
         return String.format(Locale.getDefault(), "%s", JOKES[random]);
     }
 
+    /**
+     * Main method to test if jokes are being printed correctly or not.
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         System.out.println(getJoke());
     }

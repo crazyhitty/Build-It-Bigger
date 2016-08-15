@@ -1,6 +1,9 @@
 apply plugin: 'java'
 
-task execute(type: JavaExec) {
+/**
+ * Task to execute the main method of JokeFromJavaLibrary.class
+ */
+task executeJavaLib(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'com.crazyhitty.java.joke.JokeFromJavaLibrary'
 }

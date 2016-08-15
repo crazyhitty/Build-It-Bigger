@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.crazyhitty.android.joke.ViewJokeActivity;
-import com.crazyhitty.gae.joke.jokeApi.JokeApi;
 import com.crazyhitty.java.joke.JokeFromJavaLibrary;
 import com.udacity.gradle.builditbigger.utils.NetworkConnectionUtil;
 
@@ -34,8 +33,6 @@ public class JokeFetcher {
     private static final int RC_FETCH_JOKE_ANDROID_LIB = 1337;
 
     private JokeFetcherListener mJokeFetcherListener;
-
-    private JokeApi mJokeApi;
 
     /**
      * Constructor of {@link JokeFetcher} class with a listener which can further provide joke.
@@ -179,6 +176,9 @@ public class JokeFetcher {
         void onNoInternetAvailable(String errorMsg);
     }
 
+    /**
+     * Custom exception class for handling joke related exceptions.
+     */
     private static class JokeUnavailableException extends RuntimeException {
         JokeUnavailableException(String message) {
             super(message);
