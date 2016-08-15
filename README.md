@@ -8,4 +8,4 @@ Simple app that loads jokes from java library, android library and google app en
 4. You can test if the app engine with its api is working correctly or not by using a custom task `startGoogleAppEngineTesting`, which you can further run using command `./gradlew startGoogleAppEngineTesting`. This task will automatically run the app engine, run the instrumentation tests and then stop it.
 
 # Api settings
-In order to run google app engine properly on your localhost machine, please modify the constants `LOCAL_HOST_IP_ADDRESS` and `PORT` located in `app\src\main\java\com\udacity\gradle\builditbigger\data` according to your requirements.
+In order to run google app engine properly on your localhost machine, please modify the constants `LOCAL_HOST_IP_ADDRESS` and `PORT` located in `app\src\main\java\com\udacity\gradle\builditbigger\data\ApiSettings.java` according to your requirements.
