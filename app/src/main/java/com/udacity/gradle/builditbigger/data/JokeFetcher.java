@@ -15,6 +15,7 @@ import com.udacity.gradle.builditbigger.utils.NetworkConnectionUtil;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -34,6 +35,8 @@ public class JokeFetcher {
 
     private JokeFetcherListener mJokeFetcherListener;
 
+    private Subscription mSubscription;
+
     /**
      * Constructor of {@link JokeFetcher} class with a listener which can further provide joke.
      *
@@ -51,6 +54,11 @@ public class JokeFetcher {
      * @param fragment Instance of the fragment in which this class is being used
      */
     public void fetchJoke(Fragment fragment) {
+        // Unsubscribe the subscription so that pending tasks can be removed.
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
+        }
+
         int type = UserPreferences.getJokeFetchType(fragment.getActivity());
         switch (type) {
             case UserPreferences.ARG_FETCH_JOKE_FROM_JAVA_LIBRARY:
@@ -82,6 +90,7 @@ public class JokeFetcher {
      */
     private void fetchJokeFromAndroidLibrary(Fragment fragment) {
         Intent intentStartJokeLibActivity = new Intent(fragment.getActivity(), ViewJokeActivity.class);
+        intentStartJokeLibActivity.putExtra(ViewJokeActivity.ARG_JOKE_RETRIEVED, JokeFromJavaLibrary.getJoke());
         fragment.startActivityForResult(intentStartJokeLibActivity, RC_FETCH_JOKE_ANDROID_LIB);
     }
 
@@ -90,7 +99,20 @@ public class JokeFetcher {
      * @param context    current context of the application
      */
     private void fetchJokeFromGoogleAppEngine(final Context context) {
-        Observable.create(new Observable.OnSubscribe<String>() {
+        mSubscription = getGaeJokeObservable(context)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(getGaeJokeObserver());
+    }
+
+    /**
+     * Get google app engine observable
+     *
+     * @param context current context of the application
+     * @return Google app engine Observable
+     */
+    private Observable<String> getGaeJokeObservable(final Context context) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 try {
@@ -105,29 +127,37 @@ public class JokeFetcher {
                     subscriber.onError(e);
                 }
             }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    @Override
-                    public void onCompleted() {
+        });
+    }
 
-                    }
+    /**
+     * Get google app engine observer
+     *
+     * @return
+     * Google app engine Observer
+     */
+    private Observer<String> getGaeJokeObserver() {
+        return new Observer<String>() {
+            @Override
+            public void onCompleted() {
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, "onError: " + e.getMessage(), e);
-                        if (e instanceof JokeUnavailableException) {
-                            mJokeFetcherListener.onNoInternetAvailable(e.getMessage());
-                        } else {
-                            mJokeFetcherListener.onJokeRetrievalFailure(e.getMessage());
-                        }
-                    }
+            }
 
-                    @Override
-                    public void onNext(String s) {
-                        mJokeFetcherListener.onJokeRetrievedSuccessfully(s, UserPreferences.ARG_FETCH_JOKE_FROM_GOOGLE_APP_ENGINE);
-                    }
-                });
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, "onError: " + e.getMessage(), e);
+                if (e instanceof JokeUnavailableException) {
+                    mJokeFetcherListener.onNoInternetAvailable(e.getMessage());
+                } else {
+                    mJokeFetcherListener.onJokeRetrievalFailure(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onNext(String s) {
+                mJokeFetcherListener.onJokeRetrievedSuccessfully(s, UserPreferences.ARG_FETCH_JOKE_FROM_GOOGLE_APP_ENGINE);
+            }
+        };
     }
 
     /**

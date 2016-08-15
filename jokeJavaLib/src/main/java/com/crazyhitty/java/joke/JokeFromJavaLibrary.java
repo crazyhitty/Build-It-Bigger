@@ -5,6 +5,33 @@ import java.util.Random;
 
 public class JokeFromJavaLibrary {
     /**
+     * String array containing some jokes specifically for google app engine.
+     */
+    private static final String[] GAE_JOKES = {
+            "Doctor says to his patient: \n" +
+                    "\"You have Cancer and Alzheimer.\"\n" +
+                    "\n" +
+                    "Patient: \"At least I don't have Cancer.\"",
+            "They threw me out of the cinema today for bringing my own food. But come on, the prices are way too high, plus I haven't had a barbecue in months.",
+            "Why haven't you ever seen any elephants hiding up trees? Because they're really, really good at it.",
+            "What is dangerous?\n" +
+                    "\n" +
+                    "Sneezing while having diarrhea!",
+            "Secretary: \"Doctor the invisible man has come. He says he has an appointment.\"\n" +
+                    "\n" +
+                    "Doctor: \"Tell him I cant see him.\"",
+            "\"Grandpa, why don't you have any life insurance?\"\n" +
+                    "\n" +
+                    "\"So you can all be really sad when I die.\"",
+            "A wife is like a hand grenade. Take off the ring and say good bye to your house.",
+            "I heard women love a man in uniform. Can't wait to start working at McDonalds.",
+            "Why don't cannibals eat divorced women?\n" +
+                    "\n" +
+                    "Because they're bitter.",
+            "Money doesn't buy you happiness but it can buy you a jet-ski. It is impossible to be sad when you're riding on the jet-ski."
+    };
+
+    /**
      * String array containing some jokes.
      */
     private static final String[] JOKES = {"Can a kangaroo jump higher than a house? Of course, a house doesn't jump at all.",
@@ -42,6 +69,16 @@ public class JokeFromJavaLibrary {
     public static String getJoke() {
         int random = new Random(System.currentTimeMillis()).nextInt(10);
         return String.format(Locale.getDefault(), "%s", JOKES[random]);
+    }
+
+    /**
+     * Get a random joke for google app engine module
+     *
+     * @return random joke in string format
+     */
+    public static String getGAEJoke() {
+        int random = new Random(System.currentTimeMillis()).nextInt(10);
+        return String.format(Locale.getDefault(), "%s", GAE_JOKES[random]);
     }
 
     /**

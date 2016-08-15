@@ -10,11 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.crazyhitty.android.joke.databinding.ActivityViewJokeBinding;
-import com.crazyhitty.java.joke.JokeFromJavaLibrary;
 
 import java.util.Locale;
 
 public class ViewJokeActivity extends AppCompatActivity {
+    public static final String ARG_JOKE_RETRIEVED = "joke_retrieved";
     public static final String ARG_JOKE = "joke";
 
     private ActivityViewJokeBinding mActivityViewJokeBinding;
@@ -26,8 +26,10 @@ public class ViewJokeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mActivityViewJokeBinding = DataBindingUtil.setContentView(this, R.layout.activity_view_joke);
 
-        // retrieve joke from java library
-        mJoke = String.format(Locale.getDefault(), "%s \n\n(Fetched from android library)", JokeFromJavaLibrary.getJoke());
+        // retrieve joke from intent
+        mJoke = String.format(Locale.getDefault(), "%s \n\n(%s)",
+                getIntent().getExtras().getString(ARG_JOKE_RETRIEVED, null),
+                getString(R.string.fetched_from_android_library));
         mActivityViewJokeBinding.setJoke(mJoke);
     }
 
