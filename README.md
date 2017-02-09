@@ -1,6 +1,8 @@
 # Build-It-Bigger
 Simple app that loads jokes from java library, android library and google app engine module.
 
+![](http://i.imgur.com/O6XZzzS.png)
+
 # Installation instructions
 1. Download the project or clone it via git.
 2. In project root, use command `./gradlew installFreeDebug` to install free variant of the app and `./gradlew installPaidDebug` to install paid variant of the app.
